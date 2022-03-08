@@ -20,6 +20,8 @@
 
 //     listItem.innerHTML = quantity + ' ' + itemName;
 //     list.appendChild(listItem);
+
+//     form.reset();
 //   });
 // });
 
@@ -45,5 +47,7 @@ $(function() {
     let $listItem = $('<li></li>');
     $listItem.html(quantity + ' ' + itemName);
     $list.append($listItem);
+
+    $form[0].reset();
   });
 });
