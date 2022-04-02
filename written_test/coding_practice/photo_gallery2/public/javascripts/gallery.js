@@ -1,8 +1,41 @@
 "use strict";
 
+function setComments(commentsList, photoID) {
+  let commentsRequest = new XMLHttpRequest();
+  commentsRequest.open('GET', `http://localhost:3000/comments?photo_id=${photoID}`);
+  commentsRequest.responseType = 'json';
+
+  commentsRequest.addEventListener('load', event => {
+    let request = event.target;
+    let photoComments = request.response;
+
+    let photoCommentsScript = document.getElementById('photo_comments');
+    let photoCommentsTemplate = Handlebars.compile(photoCommentsScript.innerHTML);
+
+    let photoCommentScript = document.getElementById('photo_comment');
+    let photoCommentTemplate = document.getElementById(photoCommentScript.innerHTML);
+    Handlebars.registerPartial('photoCommentTemplate', photoCommentScript.innerHTML);
+
+    commentsList.innerHTML = photoCommentsTemplate({ comments: photoComments });
+  });
+
+  commentsRequest.send();
+}
+
+function toggleSlideVisibility(slideFigures, currentIndex, newIndex) {
+  slideFigures[currentIndex].classList.remove('visible');
+  slideFigures[currentIndex].classList.add('hidden');
+  slideFigures[newIndex].classList.remove('hidden');
+  slideFigures[newIndex].classList.add('visible');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   let slides = document.getElementById('slides');
+
   let photoInformation = document.querySelector('section header');
+  let photoInformationScript = document.getElementById('photo_information');
+  let photoInformationTemplate = Handlebars.compile(photoInformationScript.innerHTML);
+
   let commentsList = document.querySelector('#comments ul');
   let photos;
   let photoIDs = {};
@@ -28,8 +61,6 @@ document.addEventListener('DOMContentLoaded', () => {
       slideFigures[index].classList.add('hidden');
     }
 
-    let photoInformationScript = document.getElementById('photo_information');
-    let photoInformationTemplate = Handlebars.compile(photoInformationScript.innerHTML);
     let photoSet1 = photos[0];
     photoInformation.innerHTML = photoInformationTemplate(photoSet1);
 
@@ -37,25 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
       photoIDs[photo.id] = photo.id;
     });
 
-    let commentsRequest = new XMLHttpRequest();
-    commentsRequest.open('GET', `http://localhost:3000/comments?photo_id=${photoIDs[1]}`);
-    commentsRequest.responseType = 'json';
-
-    commentsRequest.addEventListener('load', event => {
-      let request = event.target;
-      let photoComments = request.response;
-
-      let photoCommentsScript = document.getElementById('photo_comments');
-      let photoCommentsTemplate = Handlebars.compile(photoCommentsScript.innerHTML);
-
-      let photoCommentScript = document.getElementById('photo_comment');
-      let photoCommentTemplate = document.getElementById(photoCommentScript.innerHTML);
-      Handlebars.registerPartial('photoCommentTemplate', photoCommentScript.innerHTML);
-
-      commentsList.innerHTML = photoCommentsTemplate({ comments: photoComments });
-    });
-
-    commentsRequest.send();
+    setComments(commentsList, photoIDs[1]);
   });
 
   request.send();
@@ -67,6 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentSlide = document.querySelector('.visible');
     let currentSlideID = Number(currentSlide.dataset.id);
+    let currentSlideIndex = currentSlideID - 1;
     let newSlideID;
 
     if (currentSlideID === 1) {
@@ -75,12 +89,14 @@ document.addEventListener('DOMContentLoaded', () => {
       newSlideID = currentSlideID - 1;
     }
 
-    slideFigures[currentSlideID - 1].classList.remove('visible');
-    slideFigures[currentSlideID - 1].classList.add('hidden');
-    slideFigures[newSlideID - 1].classList.remove('hidden');
-    slideFigures[newSlideID - 1].classList.add('visible');
+    let newSlideIndex = newSlideID - 1;
 
-    console.log(newSlideID);
+    toggleSlideVisibility(slideFigures, currentSlideIndex, newSlideIndex);
+
+    let newSlideData = photos[newSlideIndex];
+    photoInformation.innerHTML = photoInformationTemplate(newSlideData);
+
+    setComments(commentsList, newSlideID);
   });
 
   let nextButton = document.querySelector('.next');
@@ -90,6 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentSlide = document.querySelector('.visible');
     let currentSlideID = Number(currentSlide.dataset.id);
+    let currentSlideIndex = currentSlideID - 1;
     let newSlideID;
 
     if (currentSlideID === Object.keys(photoIDs).length) {
@@ -98,11 +115,13 @@ document.addEventListener('DOMContentLoaded', () => {
       newSlideID = currentSlideID + 1;
     }
 
-    slideFigures[currentSlideID - 1].classList.remove('visible');
-    slideFigures[currentSlideID - 1].classList.add('hidden');
-    slideFigures[newSlideID - 1].classList.remove('hidden');
-    slideFigures[newSlideID - 1].classList.add('visible');
+    let newSlideIndex = newSlideID - 1;
 
-    console.log(newSlideID);
+    toggleSlideVisibility(slideFigures, currentSlideIndex, newSlideIndex);
+
+    let newSlideData = photos[newSlideIndex];
+    photoInformation.innerHTML = photoInformationTemplate(newSlideData);
+
+    setComments(commentsList, newSlideID);
   });
 });
