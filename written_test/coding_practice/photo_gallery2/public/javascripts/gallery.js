@@ -4,7 +4,9 @@ document.addEventListener('DOMContentLoaded', () => {
   let slides = document.getElementById('slides');
   let photoInformation = document.querySelector('section header');
   let commentsList = document.querySelector('#comments ul');
+  let photos;
   let photoIDs = {};
+  let slideFigures;
 
   let request = new XMLHttpRequest();
   request.open('GET', 'http://localhost:3000/photos');
@@ -15,8 +17,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let photosScript = document.getElementById('photos');
     let photosTemplate = Handlebars.compile(photosScript.innerHTML);
-    let photos = request.response;
+    photos = request.response;
     slides.innerHTML = photosTemplate({ photos: photos });
+    
+    slideFigures = slides.querySelectorAll('figure');
+    let currentPhoto = slideFigures[0];
+    currentPhoto.classList.add('visible');
+    
+    for (let index = 1; index < slideFigures.length; index += 1) {
+      slideFigures[index].classList.add('hidden');
+    }
 
     let photoInformationScript = document.getElementById('photo_information');
     let photoInformationTemplate = Handlebars.compile(photoInformationScript.innerHTML);
@@ -49,4 +59,50 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   request.send();
+
+  let prevButton = document.querySelector('.prev');
+
+  prevButton.addEventListener('click', event => {
+    event.preventDefault();
+
+    let currentSlide = document.querySelector('.visible');
+    let currentSlideID = Number(currentSlide.dataset.id);
+    let newSlideID;
+
+    if (currentSlideID === 1) {
+      newSlideID = Object.keys(photoIDs).length;
+    } else {
+      newSlideID = currentSlideID - 1;
+    }
+
+    slideFigures[currentSlideID - 1].classList.remove('visible');
+    slideFigures[currentSlideID - 1].classList.add('hidden');
+    slideFigures[newSlideID - 1].classList.remove('hidden');
+    slideFigures[newSlideID - 1].classList.add('visible');
+
+    console.log(newSlideID);
+  });
+
+  let nextButton = document.querySelector('.next');
+
+  nextButton.addEventListener('click', event => {
+    event.preventDefault();
+
+    let currentSlide = document.querySelector('.visible');
+    let currentSlideID = Number(currentSlide.dataset.id);
+    let newSlideID;
+
+    if (currentSlideID === Object.keys(photoIDs).length) {
+      newSlideID = 1;
+    } else {
+      newSlideID = currentSlideID + 1;
+    }
+
+    slideFigures[currentSlideID - 1].classList.remove('visible');
+    slideFigures[currentSlideID - 1].classList.add('hidden');
+    slideFigures[newSlideID - 1].classList.remove('hidden');
+    slideFigures[newSlideID - 1].classList.add('visible');
+
+    console.log(newSlideID);
+  });
 });

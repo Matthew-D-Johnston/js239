@@ -68,8 +68,18 @@ a.favorite {
   height: 784px;
 }
 
-#slides figure + figure {
+/* #slides figure + figure {
   display: none;
+} */
+
+#slides .visible {
+  opacity: 1;
+  transition-duration: 2s;
+}
+
+#slides .hidden {
+  opacity: 0;
+  transition-duration: 2s;
 }
 
 #slides img {
