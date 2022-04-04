@@ -22,6 +22,20 @@ function setComments(commentsList, photoID) {
   commentsRequest.send();
 }
 
+function updatePhotoData(photos) {
+  let request = new XMLHttpRequest();
+  request.open('GET', 'http://localhost:3000/photos');
+  request.responseType = 'json';
+
+  request.addEventListener('load', event => {
+    let request = event.target;
+
+    photos = request.response;
+  });
+
+  request.send();
+}
+
 function toggleSlideVisibility(slideFigures, currentIndex, newIndex) {
   slideFigures[currentIndex].classList.remove('visible');
   slideFigures[currentIndex].classList.add('hidden');
@@ -93,10 +107,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     toggleSlideVisibility(slideFigures, currentSlideIndex, newSlideIndex);
 
-    let newSlideData = photos[newSlideIndex];
-    photoInformation.innerHTML = photoInformationTemplate(newSlideData);
-
     setComments(commentsList, newSlideID);
+    photoInformation.innerHTML = photoInformationTemplate(photos[newSlideIndex]);
   });
 
   let nextButton = document.querySelector('.next');
@@ -119,9 +131,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
     toggleSlideVisibility(slideFigures, currentSlideIndex, newSlideIndex);
 
-    let newSlideData = photos[newSlideIndex];
-    photoInformation.innerHTML = photoInformationTemplate(newSlideData);
-
     setComments(commentsList, newSlideID);
+    photoInformation.innerHTML = photoInformationTemplate(photos[newSlideIndex]);
   });
+
+  document.querySelector("section > header").addEventListener('click', event => {
+    event.preventDefault();
+    let button = event.target;
+    let buttonType = button.getAttribute("data-property");
+    if (buttonType) {
+      let href = button.getAttribute('href');
+      let dataId = button.getAttribute('data-id');
+      let text = button.textContent;
+
+      fetch(href, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        },
+        body: 'photo_id=' + dataId
+      })
+      .then(response => response.json())
+      .then(json => {
+        button.textContent = text.replace(/\d+/, json.total);
+      });
+    };
+
+    updatePhotoData();
+  });
+
+  function updatePhotoData() {
+    let request = new XMLHttpRequest();
+    request.open('GET', 'http://localhost:3000/photos');
+    request.responseType = 'json';
+  
+    request.addEventListener('load', event => {
+      let request = event.target;
+  
+      photos = request.response;
+    });
+  
+    request.send();
+  };
 });
