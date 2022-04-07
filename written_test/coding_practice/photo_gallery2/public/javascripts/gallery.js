@@ -55,6 +55,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let photoIDs = {};
   let slideFigures;
 
+  let form = document.querySelector('form');
+
   let request = new XMLHttpRequest();
   request.open('GET', 'http://localhost:3000/photos');
   request.responseType = 'json';
@@ -173,4 +175,13 @@ document.addEventListener('DOMContentLoaded', () => {
   
     request.send();
   };
+
+  form.addEventListener('submit', event => {
+    event.preventDefault();
+
+    let formData = new FormData(form);
+    let newQueryParamsObject = new URLSearchParams(formData);
+    let queryParamsString = newQueryParamsObject.toString();
+    console.log(queryParamsString);
+  });
 });
