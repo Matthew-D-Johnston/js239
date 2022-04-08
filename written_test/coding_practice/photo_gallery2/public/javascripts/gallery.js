@@ -55,8 +55,6 @@ document.addEventListener('DOMContentLoaded', () => {
   let photoIDs = {};
   let slideFigures;
 
-  let form = document.querySelector('form');
-
   let request = new XMLHttpRequest();
   request.open('GET', 'http://localhost:3000/photos');
   request.responseType = 'json';
@@ -111,6 +109,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     setComments(commentsList, newSlideID);
     photoInformation.innerHTML = photoInformationTemplate(photos[newSlideIndex]);
+
+    let formHiddenInput = document.querySelector("input[type='hidden']");
+    formHiddenInput.value = String(newSlideID);
   });
 
   let nextButton = document.querySelector('.next');
@@ -135,6 +136,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     setComments(commentsList, newSlideID);
     photoInformation.innerHTML = photoInformationTemplate(photos[newSlideIndex]);
+
+    let formHiddenInput = document.querySelector("input[type='hidden']");
+    formHiddenInput.value = String(newSlideID);
   });
 
   document.querySelector("section > header").addEventListener('click', event => {
@@ -176,12 +180,32 @@ document.addEventListener('DOMContentLoaded', () => {
     request.send();
   };
 
-  form.addEventListener('submit', event => {
+  document.querySelector('form').addEventListener('submit', event => {
     event.preventDefault();
+    let form = document.querySelector('form');
 
     let formData = new FormData(form);
     let newQueryParamsObject = new URLSearchParams(formData);
     let queryParamsString = newQueryParamsObject.toString();
-    console.log(queryParamsString);
+    let href = form.getAttribute('action');
+
+    let commentsList = document.querySelector('#comments ul');
+    let photoCommentScript = document.getElementById('photo_comment');
+    let photoCommentTemplate = Handlebars.compile(photoCommentScript.innerHTML);
+
+    fetch(href, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+      },
+      body: queryParamsString
+    })
+    .then(response => response.json())
+    .then(json => {
+      let div = document.createElement('div');
+      div.innerHTML = photoCommentTemplate(json);
+      commentsList.appendChild(div.firstElementChild);
+      form.reset();
+    });
   });
 });
