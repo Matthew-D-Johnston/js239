@@ -1,0 +1,45 @@
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    function childNodes(idNumber) {
+      let numberOfChildren = [0, 0];
+      let stringId = String(idNumber);
+      let node = document.getElementById(stringId);
+
+      let directChildNodes = node.childNodes;
+      
+      let numberOfDirectChildNodes = directChildNodes.length;
+      let numberOfIndirectChildNodes = 0;
+
+      directChildNodes.forEach(child => {
+        child.childNodes.forEach(innerChild => countIndirectChildNodes(innerChild));
+      });
+
+
+
+      numberOfChildren[0] = numberOfDirectChildNodes;
+      numberOfChildren[1] = numberOfIndirectChildNodes;
+      return numberOfChildren;
+
+      function countIndirectChildNodes(node) {
+        numberOfIndirectChildNodes += 1;
+
+        node.childNodes.forEach(innerChildNode => countIndirectChildNodes(innerChildNode));
+      }
+    }
+
+    console.log(childNodes(1));
+    console.log(childNodes(2));
+    console.log(childNodes(4));
+    console.log(childNodes(8));
+    console.log(childNodes(9));
+  });
+</script>
+<div id="1">
+  <h1 id="2">Hello, <em id="3">World</em></h1>
+  <p id="4">
+    Welcome to wonderland. This is an
+    <span id="5">awesome</span> place.
+  </p>
+  <a href="#" id="6"><strong id="7">Enter</strong></a>
+  <div id="8"><p id="9"><a href="#" id="10">Go back</a></p></div>
+</div>
