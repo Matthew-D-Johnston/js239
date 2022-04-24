@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let data = {
       name: formData.get('staff_name'),
       email: formData.get('staff_email')
-    }
+    };
     let json = JSON.stringify(data);
     
     console.log(json);
