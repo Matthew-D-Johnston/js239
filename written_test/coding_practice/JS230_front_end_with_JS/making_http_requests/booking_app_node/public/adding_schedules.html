@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Adding Schedules</title>
+    <script src="javascripts/adding_schedules.js"></script>
+    <style>
+      button {
+        color: white;
+        background-color: rgb(99, 172, 241);
+        height: 60px;
+        width: 100px;
+        margin: 3px;
+        border: none;
+        border-radius: 4px;
+      }
+
+      button:focus {
+        outline: 3px solid rgb(159, 232, 247);
+      }
+
+      ul {
+        display: grid;
+        grid-template-columns: max-content;
+        list-style: none;
+      }
+
+      li {
+        text-align: right;
+        color: rgb(200, 4, 4);
+        margin: 0 0 5px 0;
+      }
+
+      label {
+        margin-right: 3px;
+      }
+
+      select {
+        width: 147px;
+      }
+
+      input[type=submit] {
+        color: white;
+        background-color: rgb(209, 6, 6);
+        width: 100px;
+        height: 50px;
+        border: none;
+        border-radius: 4px;
+        margin-top: 5px;
+      }
+
+      input[type=button]:focus {
+        outline: 3px solid rgb(159, 232, 247); 
+      }
+    </style>
+  </head>
+  <main>
+    <button>Add more schedules</button>
+    <form>
+      <input type="submit" value="Submit">
+    </form>
+  </main>
+</html>
