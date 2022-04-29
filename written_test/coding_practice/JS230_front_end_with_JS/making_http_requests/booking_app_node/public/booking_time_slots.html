@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Booking Time Slots</title>
+    <script src="javascripts/booking_time_slots.js"></script>
+    <style>
+      ul {
+        list-style: none;
+      }
+
+      li {
+        margin-left: -40px;
+      }
+
+      .schedule > li + li {
+        display: inline-block;
+      }
+
+      input[type=email]:focus {
+        background-color: rgb(247, 247, 179);
+      }
+
+      input[type=submit] {
+        display: inline-block;
+      }
+
+      .student-details {
+        background-color: rgb(212, 210, 210);
+        box-sizing: border-box;
+        padding: 15px 0 10px 10px;
+      }
+    </style>
+  </head>
+  <main>
+    <h1>Schedules</h1>
+    <form class="schedule">
+      <ul class="schedule">
+        <li>
+          <label for="schedule">Please select one schedule</label>
+          <select id="schedule" name="schedule"></select>
+        </li>
+        <li>
+          <label for="email">Email:</label>
+          <input type="email" id="email" name="email">
+        </li>
+        <input class="schedule button" type="submit" value="Submit">
+      </ul>
+    </form>
+  </main>
+</html>
