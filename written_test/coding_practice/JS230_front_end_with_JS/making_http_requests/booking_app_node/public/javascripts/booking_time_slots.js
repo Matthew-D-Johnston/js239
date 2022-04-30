@@ -1,8 +1,5 @@
 "use strict";
 
-// const { response } = require("express");
-
-
 function retrieveSchedules() {
   let scheduleRequest = new XMLHttpRequest();
   scheduleRequest.open('GET', 'http://localhost:3000/api/schedules/');
@@ -55,6 +52,7 @@ function newStudentDetailsHTML(email, bookingSequence) {
   h1.innerText = 'Please provide new student details';
 
   let form = document.createElement('form');
+  form.classList.add('student');
   
   let ul = document.createElement('ul');
 
@@ -140,15 +138,63 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (status === 204) {
         alert('Booked');
+      } else if (responseText.match(/Schedule/g)) {
+        alert(responseText);
       } else if (responseText.match(/Student/g)) {
-        let bookingSequence = responseText.match(/\d+/g);
+        let bookingSequence = Number(responseText.match(/\d+/g)[0]);
         alert(responseText);
         main.appendChild(newStudentDetailsHTML(email, bookingSequence));
 
-        // add a student to the database (see api)
-        // after student is successfully added, book the schedule
-      } else if (responseText.match(/Schedule/g)) {
-        alert(responseText);
+        let newStudentForm = document.querySelector('form.student');
+        
+        newStudentForm.addEventListener('submit', event => {
+          event.preventDefault();
+          let studentFormData = new FormData(newStudentForm);
+
+          let studentName = studentFormData.get('name');
+
+          if (studentName) {
+            let newStudentData = {
+              email: email,
+              name: studentName,
+              booking_sequence: bookingSequence
+            };
+
+            let jsonStudentData = JSON.stringify(newStudentData);
+
+            let newStudentRequest = new XMLHttpRequest();
+            newStudentRequest.open('POST', 'http://localhost:3000/api/students');
+            newStudentRequest.setRequestHeader('Content-Type', 'application/json');
+
+            newStudentRequest.addEventListener('load', event => {
+              let status = newStudentRequest.status;
+
+              if (status === 201) {
+                alert(newStudentRequest.responseText);
+
+                let bookingRequest = new XMLHttpRequest();
+                bookingRequest.open('POST', 'http://localhost:3000/api/bookings');
+                bookingRequest.setRequestHeader('Content-Type', 'application/json');
+
+                bookingRequest.addEventListener('load', event => {
+                  if (bookingRequest.status === 204) {
+                    alert('Booked');
+                    let div = document.querySelector('div');
+                    div.remove();
+                    scheduleForm.reset();
+                  }
+                });
+
+                bookingRequest.send(jsonBookingData);
+              }
+            });
+
+            newStudentRequest.send(jsonStudentData);
+
+          } else {
+            alert('Check student name input');
+          }
+        });
       }
     });
 
