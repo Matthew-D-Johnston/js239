@@ -79,7 +79,40 @@ Here is a list of some of the functionality of the Controller:
 
 ### Model
 
+The model will have two main variables:
 
+* a `contacts` variable that stores the list of contacts; it will be an array.
+* a `numberOfContacts` variable that stores the number of contacts.
+
+Some of the methods we will need:
+
+* a method that filters the contact list based on letters that the name starts with.
+* a method that retrieves the tags from all contacts and sorts them into an array with duplicated values eliminated.
+* a method that filters the contact list based on a specific tag value.
+
+#### Methods
+
+`filterContactsByNamesStartingWith(value)`
+
+* This method will take a string as an argument; the string represents typed letter values.
+* It will apply the filter method to the list of contacts
+* For each contact, the filter method will check if the full name of the contact starts with the string of letters
+* If the name of the contact matches, the filter method will collect that contact.
+* It will return a new array with only the contacts matching the string value.
+
+`filterContactsByTag(value)`
+
+* This method will take a string that represents a tag value.
+* It will apply the filter method to the list of contacts.
+* Any contact with a corresponding tag in the tags property will be collected by the filter
+* The method will return an array containing all the contacts with the specified tag.
+
+`retrieveContactTags()`
+
+* This method will have a filtered tags variable assigned to an empty array
+* This method will go through the list of contacts
+* For each contact it will take the tags and split the string into an array.
+* It will then iterate over the array and add any tag to the filtered tags variable that is not already included.
 
 ### View
 
@@ -98,6 +131,8 @@ Here is a model of what we want to create with the method:
 <div class="add-and-search-contacts">
   <button id="add-contact" class="add-contact">Add Contact</button>
   <input type="text" id="search" class="search" placeholder="Search">
+  <div id="contact-tags">  
+  </div>
 </div>
 ```
 
@@ -163,6 +198,24 @@ We will use the return value of this method to help create the `constructContact
 
 
 ### Controller
+
+One of the things the controller will need to do is retrieve the list of contacts from the server and store it in the Model's `contacts` variable.  
+
+`fetchContactListFromServer`
+
+* We will use the fetch method
+* this method will store the list of contacts in the Model's `contacts` variable and the number of contacts in the Model's `numberOfContacts` variable.
+* 
+
+The next thing we want to do is to display the contacts page, whether there are contacts or not.  
+
+`displayContactsView`
+
+* This method will need to employ the `async/await` functionality
+* We need to fetch the contact list from the server and set our Model `contacts` and `numberOfContacts` variables. We will need to await for this fetching to take place before we run other code.
+* The next step will be an `if/else` conditional based on whether there are any contacts or none.
+* If there are contacts then we need to display the contact list view as well as insert whatever tag links are needed.
+* If there are no contacts then we need to display the no contact view.
 
 
 
@@ -234,6 +287,8 @@ We will use the return value of this method to help create the `constructContact
   <div class="add-and-search-contacts">
     <button id="add-contact" class="add-contact">Add Contact</button>
     <input type="text" id="search" class="search" placeholder="Search">
+    <div id="contact-tags">
+    </div>
   </div>
   <div class="contact-list">    
   </div>
@@ -251,6 +306,8 @@ We will use the return value of this method to help create the `constructContact
   <div class="add-and-search-contacts">
     <button id="add-contact" class="add-contact">Add Contact</button>
     <input type="text" id="search" class="search" placeholder="Search">
+    <div id="contact-tags">
+    </div>
   </div> 
   <div class="no-contact-list">
     <p>There are no contacts.</p>
@@ -347,12 +404,44 @@ We will use the return value of this method to help create the `constructContact
 ```javascript
 class Model {
   constructor() {
-    this.contacts;
-    this.numberOfContacts;
+    this.contacts = [];
+    this.numberOfContacts = 0;
   }
   
-  filterContacts(value) {
+  filterContactsByNamesStartingWith(value) {
+    let regex = new RegExp(`^${value}`, 'gi');
     
+    return this.contacts.filter(contact => contact.full_name.match(regex));
+  }
+  
+  filterContactsByTag(value) {
+    let regex = new RegExp(`${value}`, 'gi');
+    
+    return this.contacts.filter(contact => {
+      if (contact.tags) {
+        return contact.tags.match(regex);
+      }   
+    });
+  }
+  
+  retrieveContactTags() {
+    let filteredTags = [];
+    
+    this.contacts.forEach(contact => {
+      let tags = contact.tags;
+      if (tags) {
+        let tagsArray = tags.split(',');
+      
+        tagsArray.forEach(tag => {
+          let formattedTag = tag.toLowerCase();
+          if (!filteredTags.includes(formattedTag)) {
+            filteredTags.push(formattedTag);
+          }
+        });
+      }
+    });
+    
+    return filteredTags;
   }
 }
 ```
@@ -385,8 +474,12 @@ class View {
     input.setAttribute('type', 'text');
     input.setAttribute('placeholder', 'Search');
     
+    let tagsDiv = document.createElement('div');
+    tagsDiv.id = 'contact-tags'
+    
     div.appendChild(button);
     div.appendChild(input);
+    div.appendChild(tagsDiv);
     
     return div;
   }
@@ -488,6 +581,21 @@ class View {
     script.remove();
     return template;
   }
+  
+  constructTagsListHTML(tags) {
+    let ul = document.createElement('ul');
+
+    tags.forEach(tag => {
+      let li = document.createElement('li');
+      let anchor = document.createElement('a');
+      anchor.setAttribute('href', '#');
+      anchor.innerText = tag;
+      li.appendChild(anchor);
+      ul.appendChild(li);
+    })
+
+    return ul;
+  }
 }
 ```
 
@@ -504,10 +612,127 @@ class Controller {
   constructor(model, view) {
     this.model = model;
     this.view = view;
+    this.main = document.querySelector('main');
+    this.displayContactsView();
+    this.bindEvents();
+  }
+
+  bindEvents() {
+    this.main.addEventListener('keyup', this.displayNameFilteredContacts.bind(this));
+    this.main.addEventListener('click', this.clickEventDelegator.bind(this));
+  }
+  
+  fetchContactListFromServer(url) {
+    return fetch(url, {
+      method: 'GET'
+    }).then(response => {
+      return response.json();
+    }).then(data => {
+      this.model.contacts = data;
+      this.model.numberOfContacts = data.length;
+    })
+  }
+
+  displayNameFilteredContacts(event) {
+    let searchField = document.getElementById('search');
+
+    if (event.target === searchField) {
+      let firstLetters = searchField.value;
+
+      if (firstLetters.length > 0) {
+        let filteredContacts = this.model.filterContactsByNamesStartingWith(firstLetters);
+        let contactListDiv = document.querySelector('.contact-list');
+
+        if (filteredContacts.length > 0) {
+          let filteredContactsHTML = this.view.contactListTemplate({ contacts: filteredContacts });
+          contactListDiv.innerHTML = filteredContactsHTML;
+        } else {
+          console.log('no contacts starting with');
+          this.displayMessageForNoContactsStartingWith(firstLetters, contactListDiv);
+        }
+      } else {
+        this.displayContactsView();
+      }
+    }    
+  }
+
+  clickEventDelegator(event) {
+    let target = event.target;
+    // console.log(event.target.tagName);
+
+    // Routes:
+    if (target.tagName === 'A') {
+      let tag = target.innerText;
+      this.displayTagFilteredContacts(tag);
+    }
+
+    if (target.id === 'add-contact') {
+      console.log("I'm an Add Contact button!");
+    }
+
+    if (target.classList.contains('edit')) {
+      console.log("I'm an edit button!");
+    }
+
+    if (target.classList.contains('delete')) {
+      console.log("I'm a delete button!");
+    }
+
+    if (target.id === 'submit-contact') {
+      console.log("I'm a submit contact button!");
+    }
+
+    if (target.id === 'cancel-contact') {
+      console.log("I'm a cancel contact button!");
+    }
+  }
+
+  displayMessageForNoContactsStartingWith(value, contactListDiv) {
+    let message = document.createElement('p');
+    message.innerText = `There are no contacts starting with ${value}.`;
+    contactListDiv.innerHTML = "";
+    contactListDiv.appendChild(message);
+  }
+
+  displayTagFilteredContacts(tag) {
+    let filteredContacts = this.model.filterContactsByTag(tag);
+    let filteredContactsHTML = this.view.contactListTemplate({ contacts: filteredContacts });
+    let contactListDiv = document.querySelector('.contact-list');
+    contactListDiv.innerHTML = filteredContactsHTML;
+  }
+
+  displayContactListHTML() {
+    this.main.innerHTML = "";
+    let contactListHTML = this.view.constructContactListHTML();
+    let contactListDiv = contactListHTML.querySelector('.contact-list');
+    contactListDiv.innerHTML = this.view.contactListTemplate({ contacts: this.model.contacts });
+    this.main.appendChild(contactListHTML);
+  }
+
+  displayNoContactListHTML() {
+    this.main.innerHTML = "";
+    let noContactListHTML = this.view.constructNoContactListHTML();
+    this.main.appendChild(noContactListHTML);
+  }
+
+  displayTagsListHTML() {
+    let tagsDiv = document.getElementById('contact-tags');
+    let tags = this.model.retrieveContactTags();
+    let ul = this.view.constructTagsListHTML(tags);
+    tagsDiv.appendChild(ul);
+  }
+
+  async displayContactsView() {
+    await this.fetchContactListFromServer('http://localhost:3000/api/contacts');
+
+    if (this.model.numberOfContacts > 0) {
+      this.displayContactListHTML();
+      this.displayTagsListHTML();
+    } else {
+      this.displayNoContactListHTML();
+    }
   }
 }
-
-// let app = new Controller(new Model(), new View());
 ```
 
 
