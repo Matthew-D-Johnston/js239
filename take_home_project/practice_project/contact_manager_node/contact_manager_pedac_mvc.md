@@ -531,6 +531,10 @@ class View {
     input.setAttribute('type', type);
     input.id = id;
     input.name = name;
+
+    if (id === 'name') {
+      input.required = true;
+    }
     
     li.appendChild(label);
     li.appendChild(input);
@@ -548,7 +552,7 @@ class View {
     
     let form = document.createElement('form');
     form.id = `${formType}-contact`;
-    // form.noValidate = true;
+    form.noValidate = true;
     div.appendChild(form);
     
     let fieldset = document.createElement('fieldset');
@@ -632,10 +636,6 @@ class View {
 
 
 
-
-
-
-
 ### Controller
 
 ```javascript
@@ -651,7 +651,6 @@ class Controller {
   bindEvents() {
     this.main.addEventListener('keyup', this.displayNameFilteredContacts.bind(this));
     this.main.addEventListener('click', this.clickEventDelegator.bind(this));
-    // this.main.addEventListener('submit', this.formSubmissionDelegator.bind(this));
   }
   
   fetchContactListFromServer(url) {
@@ -679,7 +678,6 @@ class Controller {
           let filteredContactsHTML = this.view.contactListTemplate({ contacts: filteredContacts });
           contactListDiv.innerHTML = filteredContactsHTML;
         } else {
-          console.log('no contacts starting with');
           this.displayMessageForNoContactsStartingWith(firstLetters, contactListDiv);
         }
       } else {
@@ -692,20 +690,16 @@ class Controller {
     event.preventDefault();
     let target = event.target;
 
-    // Routes:
     if (target.tagName === 'A') {
       let tag = target.innerText;
       this.displayTagFilteredContacts(tag);
     }
 
     if (target.id === 'add-contact') {
-      let createContactFormDiv = this.view.constructContactFormHTML('create');
-      this.main.innerHTML = "";
-      this.main.appendChild(createContactFormDiv);
+      this.displayAddContactForm();
     }
 
     if (target.classList.contains('edit')) {
-      console.log("I'm an edit button!");
       let contact = this.obtainContactFromEditButton(target);
       this.displayEditContactForm(contact);
     }
@@ -719,12 +713,23 @@ class Controller {
     }
 
     if (target.id === 'create-submit') {
-      console.log("I'm a create contact submit button!");
-      this.addNewContact();
+      let nameInput = document.getElementById('name');
+
+      if (nameInput.checkValidity()) {
+        this.addNewContact();
+      } else {
+        alert("You must enter a contact name before submitting.");
+      }
     }
 
     if (target.id === 'edit-submit') {
-      this.editContact();
+      let nameInput = document.getElementById('name');
+
+      if (nameInput.checkValidity()) {
+        this.editContact();
+      } else {
+        alert("There must be a contact name before you can submit.")
+      }
     }
 
     if (target.id === 'cancel-contact') {
@@ -805,6 +810,12 @@ class Controller {
     return contact;
   }
 
+  displayAddContactForm() {
+    let contactFormDiv = this.view.constructContactFormHTML('create');
+    this.main.innerHTML = "";
+    this.main.appendChild(contactFormDiv);
+  }
+
   displayEditContactForm(contact) {
     let editContactFormHTML = this.view.constructFilledOutEditContactForm(contact);
     this.main.innerHTML = '';
@@ -813,7 +824,7 @@ class Controller {
 
   displayMessageForNoContactsStartingWith(value, contactListDiv) {
     let message = document.createElement('p');
-    message.innerText = `There are no contacts starting with ${value}.`;
+    message.innerText = `There are no contacts starting with "${value}".`;
     contactListDiv.innerHTML = "";
     contactListDiv.appendChild(message);
   }

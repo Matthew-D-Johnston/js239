@@ -1,0 +1,44 @@
+[
+  {
+    "full_name": "Naveed Fida",
+    "phone_number": "12345678901",
+    "email": "nf@example.com",
+    "tags": "work,friend",
+    "id": 1
+  },
+  {
+    "full_name": "Victor Reyes",
+    "phone_number": "09876543210",
+    "email": "vpr@example.com",
+    "tags": "work,friend",
+    "id": 2
+  },
+  {
+    "full_name": "Pete Hanson",
+    "phone_number": "54321098761",
+    "email": "ph@example.com",
+    "tags": "",
+    "id": 3
+  },
+  {
+    "full_name": "Matt Johnston",
+    "phone_number": "3494567890",
+    "email": "matt_j@example.com",
+    "tags": "me,economy",
+    "id": 4
+  },
+  {
+    "full_name": "Mark Hammil",
+    "phone_number": "3412983498",
+    "email": "mh@example.com",
+    "tags": "actor,nice",
+    "id": 5
+  },
+  {
+    "full_name": "Nicki Minaj",
+    "phone_number": "6348970234",
+    "email": "nm@example.com",
+    "tags": "singer,cool,friend",
+    "id": 6
+  }
+]
