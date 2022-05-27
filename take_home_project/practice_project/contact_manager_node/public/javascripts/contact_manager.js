@@ -21,6 +21,10 @@ class Model {
       }   
     });
   }
+
+  filterContactsById(value) {
+    return this.contacts.filter(contact => contact.id === value)[0];
+  }
   
   retrieveContactTags() {
     let filteredTags = [];
@@ -136,13 +140,14 @@ class View {
     
     let form = document.createElement('form');
     form.id = `${formType}-contact`;
+    // form.noValidate = true;
     div.appendChild(form);
     
     let fieldset = document.createElement('fieldset');
     form.appendChild(fieldset);
     
     let submitButton = document.createElement('input');
-    submitButton.id = 'submit-contact';
+    submitButton.id = `${formType}-submit`;
     submitButton.setAttribute('type', 'submit');
     submitButton.value = 'Submit';
     form.appendChild(submitButton);
@@ -167,6 +172,27 @@ class View {
     
     return div;
   }
+
+  constructFilledOutEditContactForm(contact) {
+    let editContactFormHTML = this.constructContactFormHTML('edit');
+    
+    let form = editContactFormHTML.querySelector('form');
+    form.id = `edit-contact-${contact.id}`;
+
+    let nameInput = editContactFormHTML.querySelector('#name');
+    nameInput.value = contact.full_name;
+    
+    let emailInput = editContactFormHTML.querySelector('#email');
+    emailInput.value = contact.email;
+
+    let telephoneInput = editContactFormHTML.querySelector('#telephone');
+    telephoneInput.value = contact.phone_number;
+
+    let tagsInput = editContactFormHTML.querySelector('#tags');
+    tagsInput.value = contact.tags;
+
+    return editContactFormHTML;
+  }
     
   constructContactListTemplate() {
     let script = document.getElementById('contact-list-template');
@@ -177,6 +203,10 @@ class View {
 
   constructTagsListHTML(tags) {
     let ul = document.createElement('ul');
+
+    let p = document.createElement('p');
+    p.innerText = "Tags:";
+    ul.appendChild(p);
 
     tags.forEach(tag => {
       let li = document.createElement('li');
@@ -196,13 +226,14 @@ class Controller {
     this.model = model;
     this.view = view;
     this.main = document.querySelector('main');
-    this.displayContactsView();
+    this.displayContactsView(true);
     this.bindEvents();
   }
 
   bindEvents() {
     this.main.addEventListener('keyup', this.displayNameFilteredContacts.bind(this));
     this.main.addEventListener('click', this.clickEventDelegator.bind(this));
+    // this.main.addEventListener('submit', this.formSubmissionDelegator.bind(this));
   }
   
   fetchContactListFromServer(url) {
@@ -234,14 +265,14 @@ class Controller {
           this.displayMessageForNoContactsStartingWith(firstLetters, contactListDiv);
         }
       } else {
-        this.displayContactsView();
+        this.displayContactsView(false);
       }
     }    
   }
 
   clickEventDelegator(event) {
+    event.preventDefault();
     let target = event.target;
-    // console.log(event.target.tagName);
 
     // Routes:
     if (target.tagName === 'A') {
@@ -250,24 +281,116 @@ class Controller {
     }
 
     if (target.id === 'add-contact') {
-      console.log("I'm an Add Contact button!");
+      let createContactFormDiv = this.view.constructContactFormHTML('create');
+      this.main.innerHTML = "";
+      this.main.appendChild(createContactFormDiv);
     }
 
     if (target.classList.contains('edit')) {
       console.log("I'm an edit button!");
+      let contact = this.obtainContactFromEditButton(target);
+      this.displayEditContactForm(contact);
     }
 
     if (target.classList.contains('delete')) {
-      console.log("I'm a delete button!");
+      if (window.confirm('Are you sure you want to delete this contact?')) {
+        let contactID = Number(target.id.match(/\d+/g)[0]);
+        this.deleteContact(contactID);
+        this.displayContactsView(true);
+      }
     }
 
-    if (target.id === 'submit-contact') {
-      console.log("I'm a submit contact button!");
+    if (target.id === 'create-submit') {
+      console.log("I'm a create contact submit button!");
+      this.addNewContact();
+    }
+
+    if (target.id === 'edit-submit') {
+      this.editContact();
     }
 
     if (target.id === 'cancel-contact') {
-      console.log("I'm a cancel contact button!");
+      this.displayContactsView(false);
     }
+  }
+
+  deleteContact(contactID) {
+    return fetch(`http://localhost:3000/api/contacts/${contactID}`, {
+      method: 'DELETE'
+    });
+  }
+
+  async editContact() {
+    let form = document.querySelector('form');
+    let formData = new FormData(form);
+
+    let contactID = Number(form.id.match(/\d+/g)[0]);
+    let contactName = formData.get('name');
+    let contactEmail = formData.get('email');
+    let contactTelephone = formData.get('telephone');
+    let contactTags = formData.get('tags');
+
+    let contact = {
+      id: contactID,
+      full_name: contactName,
+      email: contactEmail,
+      phone_number: contactTelephone,
+      tags: contactTags
+    }
+
+    await this.updateContact(contactID, contact);
+    this.displayContactsView(true);
+  }
+
+  async addNewContact() {
+    let form = document.querySelector('form');
+    let formData = new FormData(form);
+
+    let contactName = formData.get('name');
+    let contactEmail = formData.get('email');
+    let contactTelephone = formData.get('telephone');
+    let contactTags = formData.get('tags');
+
+    let contact = {
+      full_name: contactName,
+      email: contactEmail,
+      phone_number: contactTelephone,
+      tags: contactTags
+    }
+
+    await this.saveContact(contact);
+    this.displayContactsView(true);
+  }
+
+  updateContact(id, contact) {
+    let json = JSON.stringify(contact);
+    return fetch(`http://localhost:3000/api/contacts/${id}`, {
+      method: 'PUT',
+      headers: [['Content-Type', 'application/json']],
+      body: json
+    });
+  }
+
+  saveContact(contact) {
+    let json = JSON.stringify(contact);
+    return fetch('http://localhost:3000/api/contacts/', {
+      method: 'POST',
+      headers: [['Content-Type', 'application/json']],
+      body: json
+    });
+  }
+
+  obtainContactFromEditButton(target) {
+    let buttonID = target.id;
+    let contactID = Number(buttonID.match(/\d+/g)[0]);
+    let contact = this.model.filterContactsById(contactID);
+    return contact;
+  }
+
+  displayEditContactForm(contact) {
+    let editContactFormHTML = this.view.constructFilledOutEditContactForm(contact);
+    this.main.innerHTML = '';
+    this.main.appendChild(editContactFormHTML);
   }
 
   displayMessageForNoContactsStartingWith(value, contactListDiv) {
@@ -305,8 +428,10 @@ class Controller {
     tagsDiv.appendChild(ul);
   }
 
-  async displayContactsView() {
-    await this.fetchContactListFromServer('http://localhost:3000/api/contacts');
+  async displayContactsView(fetchDataFromServer) {
+    if (fetchDataFromServer) {
+      await this.fetchContactListFromServer('http://localhost:3000/api/contacts');
+    }
 
     if (this.model.numberOfContacts > 0) {
       this.displayContactListHTML();
@@ -319,6 +444,4 @@ class Controller {
 
 document.addEventListener('DOMContentLoaded', () => {
   let contactManagerApp = new Controller(new Model(), new View());
-  // contactManagerApp.displayContactsView()
-  console.log(contactManagerApp.model);
 });
