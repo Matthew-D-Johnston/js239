@@ -48,8 +48,9 @@ main {
 }
 
 .create-contact, .edit-contact {
-  text-align: center;
+  text-align: right;
   padding: 20px;
+  margin-right: 45%;
 }
 
 h2 {
@@ -57,12 +58,12 @@ h2 {
   margin-bottom: 20px;
 }
 
-form {
-  margin: 10px;
-}
-
 fieldset li {
   margin: 5px 0;
+}
+
+fieldset input {
+  margin-left: 10px;
 }
 
 #create-submit, #edit-submit, #cancel-contact {

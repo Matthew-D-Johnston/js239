@@ -38,7 +38,14 @@
     "full_name": "Nicki Minaj",
     "phone_number": "6348970234",
     "email": "nm@example.com",
-    "tags": "singer,cool,friend",
+    "tags": "singer,cool,friend,work",
     "id": 6
+  },
+  {
+    "full_name": "Bob Dylan",
+    "phone_number": "5554443232",
+    "email": "bob_dylan@example.com",
+    "tags": "singer,poet,friend",
+    "id": 7
   }
 ]
