@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="stylesheets/contact_manager_1.css">
+  <script src="/javascripts/jquery.js"></script>
+  <script src="/javascripts/handlebars.js"></script>
+  <script src="/javascripts/contact_manager_1.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Contact Manager</h1>
+  </header>
+  <main>
+    <script id="contact-list-template" type="text/x-handlebars">
+      <ul>
+      {{#each contacts}}
+        <li id="contact-{{id}}">
+          <h3>{{full_name}}</h3>
+          <dl>
+            <dt>Phone Number:</dt>
+            <dd>{{phone_number}}</dd>
+            <dt>Email:</dt>
+            <dd>{{email}}</dd>
+            <dt>Tags:</dt>
+            <dd>{{tags}}</dd>
+          </dl>
+          <button class="edit" id="edit-{{id}}">Edit</button>
+          <button class="delete" id="delete-{{id}}">Delete</button>
+        </li>
+      {{/each}}
+      </ul>
+    </script>
+  </main>
+  <footer>
+    <p>Developed by Matt</p>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,83 @@
+@import url("whitespace-reset.css");
+
+header {
+  text-align: center;
+  height: 150px;
+  color: #FFF;
+  font-size: 30px;
+  background-color: #4E3376;
+}
+
+h1 {
+  padding-top: 55px;
+}
+
+main {
+  margin: auto;
+}
+
+.add-and-search-contacts {
+  background-color: #F2F2F2;
+  text-align: center;
+  padding: 10px 0 10px 0;
+}
+
+#add-contact, #search {
+  padding: 10px;
+  margin: 10px;
+}
+
+#contact-tags li {
+  display: inline;
+  margin: 5px;
+}
+.contact-list {
+  margin: 20px;
+}
+.contact-list ul {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.contact-list li {
+  margin: 10px;
+}
+
+.edit, .delete {
+  margin: 5px 2px;
+}
+
+.create-contact, .edit-contact {
+  text-align: right;
+  padding: 20px;
+  margin-right: 45%;
+}
+
+h2 {
+  font-size: 22px;
+  margin-bottom: 20px;
+}
+
+fieldset li {
+  margin: 5px 0;
+}
+
+fieldset input {
+  margin-left: 10px;
+}
+
+#create-submit, #edit-submit, #cancel-contact {
+  margin: 8px;
+  padding: 5px;
+}
+
+footer {
+  text-align: center;
+  height: 50px;
+  background-color: #F2F2F2;
+}
+
+footer p {
+  margin-top: 25px;
+  padding-top: 15px;
+}

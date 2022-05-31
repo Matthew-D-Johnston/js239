@@ -17,18 +17,11 @@
     "full_name": "Pete Hanson",
     "phone_number": "54321098761",
     "email": "ph@example.com",
-    "tags": "",
+    "tags": "friend,work",
     "id": 3
   },
   {
-    "full_name": "Matt Johnston",
-    "phone_number": "3494567890",
-    "email": "matt_j@example.com",
-    "tags": "me,economy",
-    "id": 4
-  },
-  {
-    "full_name": "Mark Hammil",
+    "full_name": "Mark Hammer",
     "phone_number": "3412983498",
     "email": "mh@example.com",
     "tags": "actor,nice",
@@ -47,5 +40,12 @@
     "email": "bob_dylan@example.com",
     "tags": "singer,poet,friend",
     "id": 7
+  },
+  {
+    "full_name": "Connor McDavid",
+    "phone_number": "6339873456",
+    "email": "cm@example.com",
+    "tags": "hockey,star,oilers",
+    "id": 9
   }
 ]

@@ -9,31 +9,32 @@
   <script src="/javascripts/jquery.js"></script>
   <script src="/javascripts/handlebars.js"></script>
   <script src="/javascripts/contact_manager.js"></script>
+  <script id="contactTemplate" type="text/x-handlebars">
+    <li id='contact-{{id}}'>
+      <h3>{{full_name}}</h3>
+      <dl>
+        <dt>Phone Number:</dt>
+        <dd>{{phone_number}}</dd>
+        <dt>Email:</dt>
+        <dd>{{email}}</dd>
+        <dt>Tags:</dt>
+        <dd>{{tags}}</dd>
+      </dl>
+      <button id="edit-{{id}}" class="edit">Edit</button>
+      <button id="delete-{{id}}" class="delete">Delete</button>
+    </li>
+  </script>
+  <script id="contactsList" type="text/x-handlebasrs">
+    {{#each contacts}}
+    {{> contactTemplate}}
+    {{/each}}
+  </script>
 </head>
 <body>
   <header>
     <h1>Contact Manager</h1>
   </header>
   <main>
-    <script id="contact-list-template" type="text/x-handlebars">
-      <ul>
-      {{#each contacts}}
-        <li id="contact-{{id}}">
-          <h3>{{full_name}}</h3>
-          <dl>
-            <dt>Phone Number:</dt>
-            <dd>{{phone_number}}</dd>
-            <dt>Email:</dt>
-            <dd>{{email}}</dd>
-            <dt>Tags:</dt>
-            <dd>{{tags}}</dd>
-          </dl>
-          <button class="edit" id="edit-{{id}}">Edit</button>
-          <button class="delete" id="delete-{{id}}">Delete</button>
-        </li>
-      {{/each}}
-      </ul>
-    </script>
   </main>
   <footer>
     <p>Developed by Matt</p>
