@@ -29,17 +29,10 @@
   },
   {
     "full_name": "Nicki Minaj",
-    "phone_number": "6348970234",
+    "phone_number": "1112224444",
     "email": "nm@example.com",
     "tags": "singer,cool,friend,work",
     "id": 6
-  },
-  {
-    "full_name": "Bob Dylan",
-    "phone_number": "5554443232",
-    "email": "bob_dylan@example.com",
-    "tags": "singer,poet,friend",
-    "id": 7
   },
   {
     "full_name": "Connor McDavid",
@@ -47,5 +40,19 @@
     "email": "cm@example.com",
     "tags": "hockey,star,oilers",
     "id": 9
+  },
+  {
+    "full_name": "Matt Johnston",
+    "phone_number": "8345679876",
+    "email": "matt_j@example.com",
+    "tags": "me,economy",
+    "id": 10
+  },
+  {
+    "full_name": "Nathan MacKinnon",
+    "phone_number": "3458764523",
+    "email": "nm@example.com",
+    "tags": "hockey,star,avalanche",
+    "id": 11
   }
 ]

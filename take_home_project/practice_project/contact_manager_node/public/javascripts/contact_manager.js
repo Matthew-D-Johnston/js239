@@ -119,7 +119,7 @@ class View {
 
   constructTagsDiv() {
     let tagsDiv = document.createElement('div');
-    tagsDiv.id = 'tags';
+    tagsDiv.id = 'tags-container';
 
     let p = document.createElement('p');
     p.innerText = 'Tags:';

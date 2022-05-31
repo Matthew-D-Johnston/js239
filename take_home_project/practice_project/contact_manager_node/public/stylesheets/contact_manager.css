@@ -1,1 +1,83 @@
 @import url("whitespace-reset.css");
+
+header {
+  height: 150px;
+  color: #FFF;
+  background-color: #492F70;
+  text-align: center;
+}
+
+h1 {
+  padding-top: 55px;
+  font-size: 28px;
+}
+
+footer {
+  height: 80px;
+  text-align: center;
+  background-color: #F2F2F2;
+}
+
+footer p {
+  padding-top: 30px;
+}
+
+#add-and-search {
+  height: 75px;
+  text-align: center;
+  background-color: #F2F2F2;
+}
+
+#add-contact, #search-contacts {
+  margin: 15px 10px 0 10px;
+  padding: 10px;
+}
+
+#tags-container {
+  text-align: center;
+  padding: 15px 0;
+}
+
+#tags-container li {
+  display: inline-block;
+  margin: 5px 3px 10px 3px;
+}
+
+#contact-list ul {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+#contact-list li {
+  margin: 15px;
+}
+
+.edit {
+  margin: 5px 5px 0 0;
+}
+
+#create-contact, #edit-contact {
+  text-align: right;
+  margin-right: 40%;
+}
+
+h2 {
+  font-size: 22px;
+  padding: 15px 40px 15px 0;
+}
+
+form {
+  padding-bottom: 15px;
+}
+
+#create-contact-cancel, #edit-contact-cancel {
+  margin: 10px 45px 0 10px;
+}
+
+label {
+  margin: 0 3px 5px 0;
+}
+
+form input {
+  margin: 0 0 5px 0;
+}
